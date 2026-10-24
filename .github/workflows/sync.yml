@@ -1,0 +1,18 @@
+name: Hourly Untappd sync
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    # Skip quietly until the site is configured
+    if: ${{ vars.SITE_URL != '' }}
+    steps:
+      - name: Pull new check-ins from RSS
+        run: |
+          curl -fsS --max-time 60 -X POST \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ vars.SITE_URL }}/api/sync"

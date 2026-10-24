@@ -13,6 +13,24 @@ export default function AdminPage() {
   const [busy, setBusy] = useState(false);
 
   if (mode !== "private") return <Locked what="Admin" />;
+
+  async function syncNow() {
+    setBusy(true);
+    setLog(["Checking the Untappd RSS feed…"]);
+    const res = await fetch("/api/sync", { method: "POST" });
+    const body = await res.json().catch(() => ({}));
+    if (res.ok) {
+      setLog([
+        `Feed had ${body.fetched} check-ins, ${body.added} new.` +
+          (body.unplaced ? ` ${body.unplaced} at venues not seen before - they'll be placed by the next export upload.` : "") +
+          (body.skipped ? ` ${body.skipped} couldn't be parsed.` : ""),
+      ]);
+      await reload();
+    } else {
+      setLog([`Sync failed: ${body.error ?? res.status}`]);
+    }
+    setBusy(false);
+  }
   const s = stats(checkins);
   const latest = checkins.at(-1)?.t;
 
@@ -50,10 +68,18 @@ export default function AdminPage() {
           {s.checkins.toLocaleString()} check-ins loaded
           {latest && <> · latest {new Date(latest).toLocaleDateString()}</>}
         </p>
+        <h3>Hourly sync</h3>
+        <p className="muted" style={{ fontSize: 14 }}>
+          New check-ins are pulled from your Untappd RSS feed every hour. Venues already on the map are placed
+          automatically; brand-new ones get coordinates from the next export upload.
+        </p>
+        <button className="btn" onClick={syncNow} disabled={busy}>
+          Sync now
+        </button>
         <h3>Upload an Untappd export</h3>
         <p className="muted" style={{ fontSize: 14 }}>
-          Untappd → Account → Download History → JSON. Re-uploading is safe - check-ins are matched by ID, so only new
-          ones get added.
+          Untappd → Account → Download History → JSON. Re-uploading is safe - check-ins are matched by ID, and the export
+          fills in details the RSS feed doesn&apos;t have (ratings, styles, new venues).
         </p>
         <input
           className="input"

@@ -24,12 +24,16 @@ are gitignored.
 
 ## Data
 
-There's no Untappd API key, so data comes from the Insider export
-(Untappd → Account → Download History → JSON):
-
-1. Unlock the site, go to **Admin**, and upload the JSON.
-2. To update later, export again and re-upload. Check-ins are matched by ID, so
-   nothing gets duplicated.
+1. **Backfill (once):** the Untappd Insider export (Untappd → Account → Download
+   History → JSON). Unlock the site, go to **Admin**, upload it.
+2. **Hourly:** a GitHub Action (`.github/workflows/sync.yml`) calls `/api/sync`,
+   which reads your Untappd RSS feed and adds any check-ins it hasn't seen.
+   - The feed has no coordinates, so new check-ins are placed using venues
+     already on the map (and "Untappd at Home" → the home cities). A venue
+     you've never been to stays off the map until the next export upload.
+   - The feed has no ratings/styles either. Re-uploading an export fills those
+     in - export rows always replace RSS rows; RSS never overwrites export rows.
+   - **Sync now** on `/admin` runs it on demand.
 
 ## Deploying (Vercel)
 
@@ -39,7 +43,16 @@ There's no Untappd API key, so data comes from the Insider export
 3. Add environment variables:
    - `SITE_PASSWORD` - the unlock password
    - `SESSION_SECRET` - a long random string (`openssl rand -hex 32`)
-4. Redeploy, unlock, and upload the export on `/admin`.
+   - `CRON_SECRET` - another long random string
+   - `UNTAPPD_RSS_URL` - your feed URL from untappd.com/account/settings
+     (it has a private key in it - keep it out of the repo)
+4. Redeploy, unlock, and upload the export on `/admin`. Hit **Sync now** to
+   check the feed parses.
+5. In GitHub → repo Settings → Secrets and variables → Actions:
+   - Secret `CRON_SECRET` - same value as in Vercel
+   - Variable `SITE_URL` - e.g. `https://untappd-map.vercel.app`
+
+   The hourly job skips itself until `SITE_URL` is set.
 
 Photos are hotlinked from Untappd's S3. Newer uploads only exist at full size,
 so those go through Vercel's image optimizer (resized and cached).

@@ -130,6 +130,23 @@ function isHq(lat: number, lng: number) {
   return Math.abs(lat - UNTAPPD_HQ.lat) < 0.001 && Math.abs(lng - UNTAPPD_HQ.lng) < 0.001;
 }
 
+export const isHomeVenue = (name: string | null | undefined) => name === HOME_VENUE;
+
+export function homeLocation(id: number) {
+  const h = HOME_CITIES[id % HOME_CITIES.length];
+  return {
+    loc: `v${h.id}`,
+    lat: h.lat,
+    lng: h.lng,
+    city: h.city,
+    state: "Ontario",
+    country: "Canada",
+    countryCode: "CA",
+    venue: "Home",
+    home: true,
+  };
+}
+
 export function normalize(r: ExportRow): Checkin {
   const base: Checkin = {
     id: Number(r.checkin_id),
@@ -156,21 +173,7 @@ export function normalize(r: ExportRow): Checkin {
   const lat = r.venue_lat, lng = r.venue_lng;
   if (lat == null || lng == null) return base;
 
-  if (r.venue_name === HOME_VENUE) {
-    const h = HOME_CITIES[base.id % HOME_CITIES.length];
-    return {
-      ...base,
-      loc: `v${h.id}`,
-      lat: h.lat,
-      lng: h.lng,
-      city: h.city,
-      state: "Ontario",
-      country: "Canada",
-      countryCode: "CA",
-      venue: "Home",
-      home: true,
-    };
-  }
+  if (r.venue_name === HOME_VENUE) return { ...base, ...homeLocation(base.id) };
 
   // Other virtual venues have no real location
   if (isHq(lat, lng)) return { ...base, venue: r.venue_name ?? undefined };
@@ -199,6 +202,8 @@ export function normalize(r: ExportRow): Checkin {
 // always; newer ones (`_c_<id>_raw.jpg`) never do. The Next image optimizer
 // (resized + cached on Vercel) is the fallback.
 export function photoSources(url: string, size: 200 | 640): string[] {
+  // Anything that isn't an S3 upload (e.g. a CDN URL from the RSS feed) is used as-is
+  if (!url.startsWith("https://untappd.s3.amazonaws.com/")) return [url];
   const optimized = `/_next/image?url=${encodeURIComponent(url)}&w=${size === 200 ? 256 : 640}&q=75`;
   if (/_c_\d+_raw\.\w+$/.test(url)) return [optimized];
   const variant = url.replace(/_raw\.(jpe?g|png)$/i, `_${size}x${size}.$1`);

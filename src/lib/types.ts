@@ -24,6 +24,7 @@ export type Checkin = {
   comment?: string;
   photo?: string | null;
   url?: string;
+  src?: "rss"; // partial row from the RSS sync; the next export upload replaces it
 };
 
 export type Mode = "public" | "private";

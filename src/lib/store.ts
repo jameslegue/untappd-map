@@ -44,27 +44,34 @@ export async function getCheckins(): Promise<Checkin[]> {
   return rows;
 }
 
-// Insert or replace by check-in id, so re-uploading an export is safe
-export async function upsertCheckins(rows: Checkin[]): Promise<number> {
+// Insert or replace by check-in id, so re-uploading an export is safe.
+// With overwrite=false existing rows win (the RSS sync never clobbers export data).
+export async function upsertCheckins(rows: Checkin[], { overwrite = true } = {}): Promise<number> {
   cache = null;
   const sql = db();
   if (sql) {
     await ensureTable(sql);
-    await sql.query(
+    const res = (await sql.query(
       `insert into checkins (id, data)
        select (e->>'id')::bigint, e from jsonb_array_elements($1::jsonb) e
-       on conflict (id) do update set data = excluded.data, updated_at = now()`,
+       on conflict (id) do ${overwrite ? "update set data = excluded.data, updated_at = now()" : "nothing"}
+       returning id`,
       [JSON.stringify(rows)],
-    );
-    return rows.length;
+    )) as unknown[];
+    return res.length;
   }
   let existing: Checkin[] = [];
   try {
     existing = JSON.parse(await fs.readFile(LOCAL_FILE, "utf8"));
   } catch {}
   const byId = new Map(existing.map((c) => [c.id, c]));
-  for (const r of rows) byId.set(r.id, r);
+  let n = 0;
+  for (const r of rows) {
+    if (!overwrite && byId.has(r.id)) continue;
+    byId.set(r.id, r);
+    n++;
+  }
   await fs.mkdir(path.dirname(LOCAL_FILE), { recursive: true });
   await fs.writeFile(LOCAL_FILE, JSON.stringify([...byId.values()]));
-  return rows.length;
+  return n;
 }
