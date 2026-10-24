@@ -51,9 +51,29 @@ a { color: inherit; text-decoration: none; }
 .btn.ghost { background: transparent; color: var(--muted) !important; border: 1px solid var(--line); }
 .btn.ghost:hover { color: var(--text) !important; }
 .btn:disabled { opacity: 0.5; cursor: default; }
+/* Phone menu (hidden on wider screens) */
+.nav-current, .menu-btn, .menu, .menu-scrim { display: none; }
 @media (max-width: 640px) {
-  .brand-text { display: none; }
-  .nav { gap: 8px; }
+  .nav { gap: 10px; }
+  .links, .right { display: none; }
+  .nav-current { display: block; color: var(--muted); font-size: 14px; padding-left: 10px; border-left: 1px solid var(--line); white-space: nowrap; }
+  .menu-btn {
+    display: grid; place-items: center; margin-left: auto; width: 40px; height: 40px; border-radius: 10px;
+    background: var(--panel); border: 1px solid var(--line); color: var(--text); font-size: 18px; cursor: pointer;
+  }
+  .menu-scrim { display: block; position: fixed; inset: var(--nav-h) 0 0 0; background: rgba(0, 0, 0, 0.5); z-index: 30; }
+  .menu {
+    display: flex; flex-direction: column; position: fixed; top: calc(var(--nav-h) + 8px); left: 12px; right: 12px; z-index: 31;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 8px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  }
+  .menu a, .menu button {
+    all: unset; box-sizing: border-box; display: block; padding: 12px 14px; border-radius: 10px; font-size: 16px; cursor: pointer;
+  }
+  .menu a.active { background: var(--panel-2); color: var(--amber-2); }
+  .menu a:hover, .menu button:hover { background: var(--panel-2); }
+  .menu-sep { height: 1px; background: var(--line); margin: 6px 4px; }
+  .menu .menu-unlock { background: var(--amber); color: #1a1205; font-weight: 600; text-align: center; }
 }
 
 .main { height: calc(100dvh - var(--nav-h)); position: relative; }
