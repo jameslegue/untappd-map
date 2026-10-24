@@ -2,13 +2,15 @@
 // fields out and snap lat/lng to a coarse city point.
 export type Checkin = {
   id: number;
-  t: string; // ISO timestamp
+  t: string; // ISO timestamp (UTC)
+  off?: number; // UTC offset in minutes where the check-in happened
   beer: string;
   brewery: string;
   breweryCountry: string;
   style: string;
   abv: number | null;
   rating: number | null;
+  globalRating?: number | null; // Untappd community average for the beer
   serving: string;
   // Location - null when the check-in has no real venue
   loc: string | null; // grouping key (venue id privately, city key publicly)

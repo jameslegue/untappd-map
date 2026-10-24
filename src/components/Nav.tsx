@@ -10,6 +10,7 @@ const LINKS = [
   { href: "/replay", label: "Replay" },
   { href: "/mosaic", label: "Mosaic", locked: true },
   { href: "/wall", label: "Wall", locked: true },
+  { href: "/stats", label: "Stats" },
 ];
 
 export function Nav() {
@@ -31,7 +32,7 @@ export function Nav() {
       </Link>
       <nav className="links">
         {LINKS.map((l) => (
-          <Link key={l.href} href={l.href} className={path === l.href ? "active" : ""}>
+          <Link key={l.href} href={l.href} className={path === l.href || (l.href !== "/" && path.startsWith(`${l.href}/`)) ? "active" : ""}>
             {l.label}
             {l.locked && !unlocked && <span className="lockdot" aria-label="locked"> 🔒</span>}
           </Link>

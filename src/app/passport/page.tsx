@@ -59,8 +59,6 @@ export default function PassportPage() {
 
   if (loading && !checkins.length) return <Loading />;
   const sel = countries.find((c) => c.name === open);
-  // Stamp numbers always follow first visit; only the layout order changes
-  const stampNo = new Map(countries.map((c, i) => [c.name, i + 1]));
   const shown =
     order === "count" ? [...countries].sort((a, b) => b.checkins.length - a.checkins.length) : countries;
 
@@ -74,7 +72,7 @@ export default function PassportPage() {
               {countries.length} countries · {countries.reduce((n, c) => n + c.regions.size, 0)} regions
             </h1>
             <p className="muted">
-              Numbered in order of first visit.
+              {order === "count" ? "Ranked by check-ins." : "In order of first visit."}
               {unplaced > 0 && <> {unplaced.toLocaleString()} check-ins had no location and aren&apos;t stamped.</>}
             </p>
           </div>
@@ -89,14 +87,14 @@ export default function PassportPage() {
         </header>
 
         <div className="stamps">
-          {shown.map((c) => (
+          {shown.map((c, i) => (
             <button
               key={c.name}
               className={`stamp ${open === c.name ? "on" : ""}`}
               style={{ "--ink": ink(c.name), "--tilt": `${tilt(c.name)}deg` } as React.CSSProperties}
               onClick={() => setOpen(open === c.name ? null : c.name)}
             >
-              <span className="stamp-no">No. {String(stampNo.get(c.name)).padStart(2, "0")}</span>
+              <span className="stamp-no">No. {String(i + 1).padStart(2, "0")}</span>
               <span className="stamp-flag">{flag(c.code)}</span>
               <span className="stamp-name">{c.name}</span>
               <span className="stamp-date">{fmtDate(c.checkins[0].t, { month: "short", year: "numeric" })}</span>

@@ -21,6 +21,7 @@ export type ExportRow = {
   venue_lng?: number | null;
   photo_url?: string | null;
   checkin_url?: string | null;
+  global_rating_score?: number | null;
 };
 
 // Untappd parks virtual venues ("Untappd at Home", virtual festivals) on its HQ
@@ -29,7 +30,7 @@ const HOME_VENUE = "Untappd at Home";
 
 // "Untappd at Home" check-ins get spread across these, picked by checkin_id
 // so re-imports are stable. City centres only - never an actual address.
-const HOME_CITIES = [
+export const HOME_CITIES = [
   { id: -1, city: "Waterloo", lat: 43.4643, lng: -80.5204 },
   { id: -2, city: "London", lat: 42.9849, lng: -81.2453 },
   { id: -3, city: "Bayfield", lat: 43.5617, lng: -81.6967 },
@@ -126,6 +127,12 @@ function rating(raw: ExportRow["rating_score"]): number | null {
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
+// "2011-12-31T13:00:24-05:00" -> -300 (minutes); local time is needed for calendars
+function utcOffset(iso: string): number | undefined {
+  const m = iso.match(/([+-])(\d\d):?(\d\d)$/);
+  return m ? (m[1] === "-" ? -1 : 1) * (Number(m[2]) * 60 + Number(m[3])) : undefined;
+}
+
 function isHq(lat: number, lng: number) {
   return Math.abs(lat - UNTAPPD_HQ.lat) < 0.001 && Math.abs(lng - UNTAPPD_HQ.lng) < 0.001;
 }
@@ -151,12 +158,14 @@ export function normalize(r: ExportRow): Checkin {
   const base: Checkin = {
     id: Number(r.checkin_id),
     t: new Date(r.created_at).toISOString(),
+    off: utcOffset(r.created_at),
     beer: r.beer_name ?? "",
     brewery: r.brewery_name ?? "",
     breweryCountry: country(r.brewery_country)[0],
     style: r.beer_type ?? "",
     abv: r.beer_abv ?? null,
     rating: rating(r.rating_score),
+    globalRating: rating(r.global_rating_score),
     serving: r.serving_type ?? "",
     loc: null,
     lat: null,
