@@ -91,7 +91,7 @@ function Review() {
       serving: top(cs, (c) => c.serving || null, 1)[0],
       prev: byYear.get(year - 1)?.length ?? 0,
       photos: priv ? rated.filter((c) => c.photo).sort((a, b) => b.rating! - a.rating!).slice(0, 8) : [],
-      trips: allTrips.filter((t) => t.start.startsWith(String(year)) || t.end.startsWith(String(year))),
+      trips: priv ? allTrips.filter((t) => t.start.startsWith(String(year)) || t.end.startsWith(String(year))) : [],
     };
   }, [byYear, year, checkins, allTrips, priv]);
 
@@ -179,29 +179,31 @@ function Review() {
             </>
           )}
         </section>
-        <section className="rv-card">
-          <h2>Trips</h2>
-          {r.trips.length ? (
-            <ul className="plain">
-              {r.trips.map((t) => (
-                <li key={t.id}>
-                  <Link href={`/stats/trips?trip=${t.id}`} className="link">
-                    {t.countryCodes.slice(0, 3).map(flag).join(" ")} {t.name}
-                  </Link>
-                  <span className="muted small"> · {fmtRange(t.start, t.end)} · {t.checkins.length}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="muted">Stayed close to home.</p>
-          )}
-          {r.newCountries.length > 0 && (
-            <p className="small">
-              <span className="muted">New countries: </span>
-              {r.newCountries.join(", ")}
-            </p>
-          )}
-        </section>
+        {priv && (
+          <section className="rv-card">
+            <h2>Trips</h2>
+            {r.trips.length ? (
+              <ul className="plain">
+                {r.trips.map((t) => (
+                  <li key={t.id}>
+                    <Link href={`/stats/trips?trip=${t.id}`} className="link">
+                      {t.countryCodes.slice(0, 3).map(flag).join(" ")} {t.name}
+                    </Link>
+                    <span className="muted small"> · {fmtRange(t.start, t.end)} · {t.checkins.length}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="muted">Stayed close to home.</p>
+            )}
+            {r.newCountries.length > 0 && (
+              <p className="small">
+                <span className="muted">New countries: </span>
+                {r.newCountries.join(", ")}
+              </p>
+            )}
+          </section>
+        )}
       </div>
 
       {r.photos.length > 0 && (

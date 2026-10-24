@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import type maplibregl from "maplibre-gl";
 import { useData } from "@/components/DataProvider";
-import { Loading, Photo, Stars } from "@/components/bits";
+import { Loading, Locked, Photo, Stars } from "@/components/bits";
 import { useMap, fitTo } from "@/components/useMap";
 import { trips, fmtRange, type Trip } from "@/lib/stats";
 import { flag } from "@/lib/normalize";
@@ -31,6 +31,7 @@ function Trips() {
   );
 
   if (loading && !checkins.length) return <Loading />;
+  if (mode !== "private") return <Locked what="Trips" why="Trips show where and when you travelled, so they need the password." />;
 
   return (
     <div className="trips">

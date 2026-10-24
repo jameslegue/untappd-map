@@ -66,12 +66,12 @@ export function CheckinCard({ c }: { c: Checkin }) {
   );
 }
 
-export function Locked({ what }: { what: string }) {
+export function Locked({ what, why = "This view is built from check-in photos, so it needs the password." }: { what: string; why?: string }) {
   return (
     <div className="locked">
       <div className="locked-icon">🔒</div>
       <h2>{what} is private</h2>
-      <p className="muted">This view is built from check-in photos, so it needs the password.</p>
+      <p className="muted">{why}</p>
       <Link href="/unlock" className="btn">Unlock</Link>
     </div>
   );
