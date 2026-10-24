@@ -24,6 +24,7 @@ const tilt = (s: string) => (([...s].reduce((h, ch) => h + ch.charCodeAt(0), 0) 
 export default function PassportPage() {
   const { checkins, loading } = useData();
   const [open, setOpen] = useState<string | null>(null);
+  const [order, setOrder] = useState<"count" | "first">("count");
 
   const { countries, unplaced, breweryCountries } = useMemo(() => {
     const by = new Map<string, Country>();
@@ -58,6 +59,10 @@ export default function PassportPage() {
 
   if (loading && !checkins.length) return <Loading />;
   const sel = countries.find((c) => c.name === open);
+  // Stamp numbers always follow first visit; only the layout order changes
+  const stampNo = new Map(countries.map((c, i) => [c.name, i + 1]));
+  const shown =
+    order === "count" ? [...countries].sort((a, b) => b.checkins.length - a.checkins.length) : countries;
 
   return (
     <div className="scroll">
@@ -69,21 +74,29 @@ export default function PassportPage() {
               {countries.length} countries · {countries.reduce((n, c) => n + c.regions.size, 0)} regions
             </h1>
             <p className="muted">
-              Stamped in order of first check-in.
+              Numbered in order of first visit.
               {unplaced > 0 && <> {unplaced.toLocaleString()} check-ins had no location and aren&apos;t stamped.</>}
             </p>
+          </div>
+          <div className="seg pp-sort" role="group" aria-label="Sort stamps">
+            <button className={order === "count" ? "on" : ""} onClick={() => setOrder("count")}>
+              Most check-ins
+            </button>
+            <button className={order === "first" ? "on" : ""} onClick={() => setOrder("first")}>
+              First check-in
+            </button>
           </div>
         </header>
 
         <div className="stamps">
-          {countries.map((c, i) => (
+          {shown.map((c) => (
             <button
               key={c.name}
               className={`stamp ${open === c.name ? "on" : ""}`}
               style={{ "--ink": ink(c.name), "--tilt": `${tilt(c.name)}deg` } as React.CSSProperties}
               onClick={() => setOpen(open === c.name ? null : c.name)}
             >
-              <span className="stamp-no">No. {String(i + 1).padStart(2, "0")}</span>
+              <span className="stamp-no">No. {String(stampNo.get(c.name)).padStart(2, "0")}</span>
               <span className="stamp-flag">{flag(c.code)}</span>
               <span className="stamp-name">{c.name}</span>
               <span className="stamp-date">{fmtDate(c.checkins[0].t, { month: "short", year: "numeric" })}</span>

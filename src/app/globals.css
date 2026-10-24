@@ -103,7 +103,8 @@ a { color: inherit; text-decoration: none; }
 .card-foot { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 8px; }
 .card-foot a:hover { color: var(--amber); }
 
-.stars { position: relative; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; }
+.stars { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; }
+.stars .track { position: relative; display: inline-block; line-height: 1; }
 .stars .off { color: #3a424d; letter-spacing: 1px; }
 .stars .on { position: absolute; left: 0; top: 0; overflow: hidden; white-space: nowrap; color: var(--amber); letter-spacing: 1px; }
 .stars .num { color: var(--text); }
@@ -262,3 +263,38 @@ a { color: inherit; text-decoration: none; }
 .link { color: var(--amber); }
 .pola.big .link { color: #a5650a; }
 .overlay-loading { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+
+/* Clickable stat tiles */
+.stat-link { border-radius: 8px; padding: 2px 6px; margin: -2px -6px; transition: background .12s; }
+.stat-link:hover { background: var(--panel-2); }
+.stat-link:hover b { color: var(--amber-2); }
+
+/* Lists */
+.lists { max-width: 1100px; margin: 0 auto; padding: 20px 16px 64px; }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+.tabs a {
+  padding: 8px 14px; border-radius: 10px; border: 1px solid var(--line); color: var(--muted); font-size: 14px;
+}
+.tabs a b { color: var(--text); font-variant-numeric: tabular-nums; margin-right: 2px; }
+.tabs a:hover { color: var(--text); }
+.tabs a.on { background: var(--panel-2); color: var(--text); border-color: var(--amber); }
+.search { margin-bottom: 10px; }
+.small { font-size: 12px; }
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+.table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.table th { position: sticky; top: 0; background: var(--panel-2); text-align: left; padding: 0; white-space: nowrap; }
+.table th button {
+  all: unset; cursor: pointer; display: flex; gap: 4px; align-items: center; width: 100%; box-sizing: border-box;
+  padding: 10px 12px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
+}
+.table th button:hover { color: var(--text); }
+.table th[aria-sort="ascending"] button, .table th[aria-sort="descending"] button { color: var(--amber-2); }
+.table th.num button { justify-content: flex-end; }
+.arrow { font-size: 9px; min-width: 9px; }
+.table td { padding: 9px 12px; border-top: 1px solid var(--line); vertical-align: top; }
+.table td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.table tr.click { cursor: pointer; }
+.table tr.click:hover td { background: rgba(245, 165, 36, 0.06); }
+@media (max-width: 640px) { .table .hm { display: none; } .table td, .table th button { padding-left: 8px; padding-right: 8px; } }
+.pp-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+.pp-sort { flex: none; }

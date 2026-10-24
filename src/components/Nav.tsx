@@ -27,7 +27,7 @@ export function Nav() {
   return (
     <header className="nav">
       <Link href="/" className="brand">
-        <span aria-hidden>🍺</span> <span className="brand-text">Tapped Out</span>
+        <span aria-hidden>🍺</span> <span className="brand-text">jimmylegs.beer</span>
       </Link>
       <nav className="links">
         {LINKS.map((l) => (

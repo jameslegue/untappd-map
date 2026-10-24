@@ -10,8 +10,10 @@ export function Stars({ value }: { value: number | null }) {
   if (value == null) return <span className="muted">unrated</span>;
   return (
     <span className="stars" title={`${value} / 5`}>
-      <span className="on" style={{ width: `${(value / 5) * 100}%` }}>★★★★★</span>
-      <span className="off">★★★★★</span>
+      <span className="track">
+        <span className="on" style={{ width: `${(value / 5) * 100}%` }}>★★★★★</span>
+        <span className="off">★★★★★</span>
+      </span>
       <span className="num">{value.toFixed(2).replace(/0$/, "")}</span>
     </span>
   );

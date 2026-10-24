@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import type maplibregl from "maplibre-gl";
 import { useData } from "./DataProvider";
@@ -131,10 +132,10 @@ export function MapView() {
       <div ref={ref} className="map" />
       {loading && !checkins.length && <div className="overlay-loading"><Loading /></div>}
       <div className="overlay statbar">
-        <Stat n={s.checkins} label="check-ins" />
-        <Stat n={list.length} label={mode === "private" ? "venues" : "places"} />
-        <Stat n={s.cities} label="cities" />
-        <Stat n={s.countries} label="countries" />
+        <Stat n={s.checkins} label="check-ins" href="/lists?tab=checkins" />
+        <Stat n={list.length} label={mode === "private" ? "venues" : "places"} href="/lists?tab=venues" />
+        <Stat n={s.cities} label="cities" href="/lists?tab=cities" />
+        <Stat n={s.countries} label="countries" href="/lists?tab=countries" />
         <span className="modepill">{mode === "private" ? "🔓 exact venues" : "🔒 city level"}</span>
       </div>
       {place && (
@@ -167,11 +168,11 @@ export function MapView() {
   );
 }
 
-function Stat({ n, label }: { n: number; label: string }) {
+function Stat({ n, label, href }: { n: number; label: string; href: string }) {
   return (
-    <div className="stat">
+    <Link href={href} className="stat stat-link" title={`See all ${label}`}>
       <b>{n.toLocaleString()}</b>
       <span>{label}</span>
-    </div>
+    </Link>
   );
 }

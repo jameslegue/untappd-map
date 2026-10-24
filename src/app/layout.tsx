@@ -8,7 +8,7 @@ import { Nav } from "@/components/Nav";
 const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Tapped Out",
+  title: "jimmylegs.beer",
   description: "Every place I've checked in a beer.",
 };
 

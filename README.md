@@ -1,4 +1,4 @@
-# Tapped Out
+# jimmylegs.beer
 
 Every place I've checked in a beer on Untappd, on a map.
 
@@ -50,7 +50,7 @@ are gitignored.
    check the feed parses.
 5. In GitHub → repo Settings → Secrets and variables → Actions:
    - Secret `CRON_SECRET` - same value as in Vercel
-   - Variable `SITE_URL` - e.g. `https://untappd-map.vercel.app`
+   - Variable `SITE_URL` - e.g. `https://jimmylegs.beer`
 
    The hourly job skips itself until `SITE_URL` is set.
 

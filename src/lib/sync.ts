@@ -9,7 +9,7 @@ export async function syncFromRss(): Promise<SyncResult> {
   if (!url) throw new Error("UNTAPPD_RSS_URL is not set");
 
   const res = await fetch(url, {
-    headers: { "User-Agent": "tapped-out-map/1.0 (personal check-in map)" },
+    headers: { "User-Agent": "jimmylegs.beer/1.0 (personal check-in map)" },
     cache: "no-store",
   });
   if (!res.ok) throw new Error(`RSS fetch failed: ${res.status}`);
