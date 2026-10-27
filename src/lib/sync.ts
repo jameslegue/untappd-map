@@ -1,5 +1,5 @@
 import "server-only";
-import { getCheckins, upsertCheckins } from "./store";
+import { claimSync, getCheckins, upsertCheckins } from "./store";
 import { parseFeed, toCheckin, venueIndex } from "./rss";
 
 export type SyncResult = { fetched: number; added: number; unplaced: number; skipped: number };
@@ -28,4 +28,16 @@ export async function syncFromRss(): Promise<SyncResult> {
     unplaced: rows.filter((r) => r.lat == null).length,
     skipped: fresh.length - rows.length,
   };
+}
+
+// Sync on page load when the last sync is stale, so a fresh check-in shows up
+// as soon as the site is opened. Bounded so a slow feed never holds up a page.
+export async function syncIfStale({ minutes = 10, timeoutMs = 4000 } = {}) {
+  if (!process.env.UNTAPPD_RSS_URL) return;
+  try {
+    if (!(await claimSync(minutes))) return;
+    await Promise.race([syncFromRss(), new Promise((r) => setTimeout(r, timeoutMs))]);
+  } catch {
+    // The hourly job and "Sync now" will retry
+  }
 }

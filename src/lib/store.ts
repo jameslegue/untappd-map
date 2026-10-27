@@ -75,3 +75,25 @@ export async function upsertCheckins(rows: Checkin[], { overwrite = true } = {})
   await fs.writeFile(LOCAL_FILE, JSON.stringify([...byId.values()]));
   return n;
 }
+
+let localLastClaim = 0;
+
+// Atomically claim the right to run a sync if none has run in `minutes`.
+// Returns false when another request synced recently (or is syncing now).
+export async function claimSync(minutes: number): Promise<boolean> {
+  const sql = db();
+  if (!sql) {
+    if (Date.now() - localLastClaim < minutes * 60_000) return false;
+    localLastClaim = Date.now();
+    return true;
+  }
+  await sql`create table if not exists meta (key text primary key, at timestamptz not null)`;
+  const rows = (await sql.query(
+    `insert into meta (key, at) values ('last_sync', now())
+     on conflict (key) do update set at = now()
+       where meta.at < now() - make_interval(mins => $1)
+     returning at`,
+    [minutes],
+  )) as unknown[];
+  return rows.length > 0;
+}
