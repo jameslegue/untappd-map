@@ -410,3 +410,15 @@ details ul { margin-top: 8px; }
 .timeline li { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; }
 .ms { flex: none; min-width: 64px; font-weight: 700; color: var(--amber-2); font-variant-numeric: tabular-nums; }
 .timeline .upcoming { opacity: 0.7; border-top: 1px dashed var(--line); padding-top: 10px; }
+
+/* New-beer-a-day goal */
+.goal-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.goal-head p { margin: 0; }
+.goal-score { white-space: nowrap; }
+.goal-score b { font-size: 34px; font-variant-numeric: tabular-nums; color: var(--amber-2); }
+.goal-score span { font-size: 18px; }
+.goal-facts { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 8px 0 6px; font-size: 14px; }
+.goal-facts .up { color: #7bd88f; }
+.goal-facts .down { color: #ff8a8a; }
+.goal-you { fill: var(--text); font-weight: 600; }
+@media (max-width: 640px) { .goal .axis { font-size: 26px; } .goal-score b { font-size: 28px; } }

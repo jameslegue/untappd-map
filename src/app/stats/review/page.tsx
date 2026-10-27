@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useData } from "@/components/DataProvider";
 import { Loading, Photo, Stars } from "@/components/bits";
 import { Bars } from "@/components/charts";
+import { NewBeerGoal } from "@/components/NewBeerGoal";
 import { local, fmtDay, trips, fmtRange, styleFamily } from "@/lib/stats";
 import { flag } from "@/lib/normalize";
 import type { Checkin } from "@/lib/types";
@@ -124,6 +125,8 @@ function Review() {
           </span>
         </div>
       </header>
+
+      <NewBeerGoal checkins={checkins} year={year} />
 
       <div className="tiles">
         <Tile n={r.unique} label="different beers" sub={`${r.newBeers.toLocaleString()} first tries`} />
