@@ -24,6 +24,7 @@ export default function AdminPage() {
         `Feed had ${body.fetched} check-ins, ${body.added} new.` +
           (body.unplaced ? ` ${body.unplaced} at venues not seen before - they'll be placed by the next export upload.` : "") +
           (body.skipped ? ` ${body.skipped} couldn't be parsed.` : ""),
+        ...(body.sources ? [`Profile page: ${body.sources.profile} · RSS feed: ${body.sources.rss}`] : []),
       ]);
       await reload();
     } else {
@@ -68,10 +69,11 @@ export default function AdminPage() {
           {s.checkins.toLocaleString()} check-ins loaded
           {latest && <> · latest {new Date(latest).toLocaleDateString()}</>}
         </p>
-        <h3>Hourly sync</h3>
+        <h3>Sync</h3>
         <p className="muted" style={{ fontSize: 14 }}>
-          New check-ins are pulled from your Untappd RSS feed every hour. Venues already on the map are placed
-          automatically; brand-new ones get coordinates from the next export upload.
+          New check-ins are pulled from your public Untappd profile (instant) and RSS feed (backup) whenever the site
+          is opened, plus hourly. Venues already on the map are placed automatically; brand-new ones get coordinates
+          from the next export upload.
         </p>
         <button className="btn" onClick={syncNow} disabled={busy}>
           Sync now
