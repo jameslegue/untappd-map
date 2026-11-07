@@ -26,14 +26,17 @@ are gitignored.
 
 1. **Backfill (once):** the Untappd Insider export (Untappd → Account → Download
    History → JSON). Unlock the site, go to **Admin**, upload it.
-2. **Hourly:** a GitHub Action (`.github/workflows/sync.yml`) calls `/api/sync`,
-   which reads your Untappd RSS feed and adds any check-ins it hasn't seen.
-   - The feed has no coordinates, so new check-ins are placed using venues
-     already on the map (and "Untappd at Home" → the home cities). A venue
-     you've never been to stays off the map until the next export upload.
-   - The feed has no ratings/styles either. Re-uploading an export fills those
-     in - export rows always replace RSS rows; RSS never overwrites export rows.
-   - **Sync now** on `/admin` runs it on demand.
+2. **Ongoing:** `/api/sync` reads your public Untappd profile page (shows new
+   check-ins instantly, with rating, serving and photo) and the RSS feed
+   (backup - it can lag an hour or more), and adds any check-ins it hasn't seen.
+   It runs when the site is opened (at most every 3 minutes), hourly from a
+   GitHub Action (`.github/workflows/sync.yml`), and from **Sync now** on `/admin`.
+   - New check-ins are placed using venues already on the map (and "Untappd at
+     Home" → the home cities). A venue you've never been to stays off the map
+     until the next export upload.
+   - Re-uploading an export fills in the rest (styles, ABV, global ratings) -
+     export rows always replace synced rows, never the other way round.
+   - Set `UNTAPPD_USERNAME` to read a different profile (defaults to jameslegue).
 
 ## Deploying (Vercel)
 
