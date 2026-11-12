@@ -3,10 +3,11 @@
 import { Suspense, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import type maplibregl from "maplibre-gl";
+import type { GeoJSONSource } from "maplibre-gl";
 import { useData } from "@/components/DataProvider";
 import { Loading, Locked, Photo, Stars } from "@/components/bits";
 import { useMap, fitTo } from "@/components/useMap";
+import { MapLost } from "@/components/MapLost";
 import { trips, fmtRange, type Trip } from "@/lib/stats";
 import { flag } from "@/lib/normalize";
 
@@ -63,7 +64,7 @@ function Trips() {
 }
 
 function TripView({ trip, priv }: { trip: Trip; priv: boolean }) {
-  const { ref, map } = useMap();
+  const { ref, map, lost } = useMap();
 
   useEffect(() => {
     if (!map) return;
@@ -80,10 +81,10 @@ function TripView({ trip, priv }: { trip: Trip; priv: boolean }) {
         properties: { count: s.count },
       })),
     };
-    const lineSrc = map.getSource("trip-line") as maplibregl.GeoJSONSource | undefined;
+    const lineSrc = map.getSource("trip-line") as GeoJSONSource | undefined;
     if (lineSrc) {
       lineSrc.setData(line);
-      (map.getSource("trip-stops") as maplibregl.GeoJSONSource).setData(stops);
+      (map.getSource("trip-stops") as GeoJSONSource).setData(stops);
     } else {
       map.addSource("trip-line", { type: "geojson", data: line });
       map.addSource("trip-stops", { type: "geojson", data: stops });
@@ -113,7 +114,10 @@ function TripView({ trip, priv }: { trip: Trip; priv: boolean }) {
 
   return (
     <div className="rv-card trip-card">
-      <div className="trip-map" ref={ref} />
+      <div className="trip-mapwrap">
+        <div className="trip-map" ref={ref} />
+        {lost && <MapLost />}
+      </div>
       <h2>
         {trip.countryCodes.slice(0, 3).map(flag).join(" ")} {trip.name}
       </h2>

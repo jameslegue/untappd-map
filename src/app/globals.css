@@ -390,6 +390,7 @@ a { color: inherit; text-decoration: none; }
 .trip-name b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .trip-n { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 13px; }
 .trip-detail { position: sticky; top: 0; }
+.trip-mapwrap { position: relative; }
 .trip-map { height: 320px; border-radius: 10px; overflow: hidden; margin: -4px -6px 14px; }
 .trip-route { line-height: 1.6; }
 details summary { cursor: pointer; color: var(--muted); margin-top: 8px; }
@@ -422,3 +423,7 @@ details ul { margin-top: 8px; }
 .goal-facts .down { color: #ff8a8a; }
 .goal-you { fill: var(--text); font-weight: 600; }
 @media (max-width: 640px) { .goal .axis { font-size: 26px; } .goal-score b { font-size: 28px; } }
+
+/* Shown when the browser loses the map's WebGL context */
+.map-lost { left: 50%; top: 40%; transform: translate(-50%, -50%); padding: 18px 20px; max-width: min(420px, calc(100% - 32px)); text-align: center; z-index: 10; }
+.map-lost p { font-size: 14px; margin: 8px 0 0; }

@@ -43,3 +43,7 @@ next-env.d.ts
 # local data - never commit check-in exports
 /data
 *.export.json
+
+# MapLibre compiled by scripts/build-maplibre.mjs on install/build
+/.generated/
+/public/maplibre/

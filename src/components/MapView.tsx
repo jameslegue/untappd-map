@@ -3,9 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import type maplibregl from "maplibre-gl";
+import type { GeoJSONSource } from "maplibre-gl";
 import { useData } from "./DataProvider";
 import { useMap, fitTo } from "./useMap";
+import { MapLost } from "./MapLost";
 import { CheckinCard, Loading } from "./bits";
 import { places, stats, type Place } from "@/lib/group";
 
@@ -13,7 +14,7 @@ const PAGE = 25;
 
 export function MapView() {
   const { mode, checkins, loading } = useData();
-  const { ref, map } = useMap();
+  const { ref, map, lost } = useMap();
   const params = useSearchParams();
   const [selected, setSelected] = useState<string | null>(params.get("loc"));
   const [shown, setShown] = useState(PAGE);
@@ -34,7 +35,7 @@ export function MapView() {
         properties: { loc: p.loc, count: p.checkins.length },
       })),
     };
-    const src = map.getSource("places") as maplibregl.GeoJSONSource | undefined;
+    const src = map.getSource("places") as GeoJSONSource | undefined;
     if (src) {
       src.setData(data);
       return;
@@ -100,7 +101,7 @@ export function MapView() {
     map.on("click", "clusters", async (e) => {
       const f = e.features?.[0];
       if (!f) return;
-      const zoom = await (map.getSource("places") as maplibregl.GeoJSONSource).getClusterExpansionZoom(
+      const zoom = await (map.getSource("places") as GeoJSONSource).getClusterExpansionZoom(
         f.properties.cluster_id,
       );
       map.easeTo({ center: (f.geometry as GeoJSON.Point).coordinates as [number, number], zoom });
@@ -130,6 +131,7 @@ export function MapView() {
   return (
     <div className="mapwrap">
       <div ref={ref} className="map" />
+      {lost && <MapLost />}
       {loading && !checkins.length && <div className="overlay-loading"><Loading /></div>}
       <div className="overlay statbar">
         <Stat n={s.checkins} label="check-ins" href="/lists?tab=checkins" />

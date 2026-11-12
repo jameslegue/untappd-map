@@ -2,9 +2,10 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import maplibregl from "maplibre-gl";
+import { Marker } from "maplibre-gl";
 import { useData } from "@/components/DataProvider";
 import { useMap, fitTo } from "@/components/useMap";
+import { MapLost } from "@/components/MapLost";
 import { Loading, Locked, Photo, Stars } from "@/components/bits";
 import { photoSources } from "@/lib/normalize";
 import { fmtDate } from "@/lib/group";
@@ -24,10 +25,10 @@ export default function MosaicPage() {
 }
 
 function Mosaic({ checkins }: { checkins: Checkin[] }) {
-  const { ref, map } = useMap();
+  const { ref, map, lost } = useMap();
   const [size, setSize] = useState(1);
   const [cell, setCell] = useState<Checkin[] | null>(null);
-  const markers = useRef<maplibregl.Marker[]>([]);
+  const markers = useRef<Marker[]>([]);
 
   const photos = useMemo(() => checkins.filter((c) => c.photo && c.lat != null && c.lng != null), [checkins]);
 
@@ -79,7 +80,7 @@ function Mosaic({ checkins }: { checkins: Checkin[] }) {
           setCell(members);
         };
         const lnglat = map.unproject([cx * px + px / 2, cy * px + px / 2]);
-        markers.current.push(new maplibregl.Marker({ element: el }).setLngLat(lnglat).addTo(map));
+        markers.current.push(new Marker({ element: el }).setLngLat(lnglat).addTo(map));
       }
     };
     draw();
@@ -94,6 +95,7 @@ function Mosaic({ checkins }: { checkins: Checkin[] }) {
   return (
     <div className="mapwrap">
       <div ref={ref} className="map mosaic" />
+      {lost && <MapLost />}
       <div className="overlay statbar">
         <div className="stat">
           <b>{photos.length.toLocaleString()}</b>

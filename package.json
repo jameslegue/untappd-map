@@ -4,15 +4,17 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run build-maplibre && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "npm run build-maplibre",
+    "build-maplibre": "node scripts/build-maplibre.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
     "jose": "^6.2.13",
-    "maplibre-gl": "^5.24.0",
-    "next": "15.5.28",
+    "maplibre-gl": "^6.18.0",
+    "next": "15.5.29",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "server-only": "^0.0.1"
@@ -23,8 +25,9 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "esbuild": "^0.28.2",
     "eslint": "^9",
-    "eslint-config-next": "15.5.28",
+    "eslint-config-next": "15.5.29",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import maplibregl from "maplibre-gl";
+import type { GeoJSONSource } from "maplibre-gl";
 import { useData } from "@/components/DataProvider";
 import { useMap } from "@/components/useMap";
+import { MapLost } from "@/components/MapLost";
 import { Loading } from "@/components/bits";
 import { fmtDate, where } from "@/lib/group";
 
@@ -17,7 +18,7 @@ const GAP_SKIP = 45 * DAY; // fast-forward through quiet stretches
 
 export default function ReplayPage() {
   const { checkins, loading, mode } = useData();
-  const { ref, map } = useMap({ center: [-60, 38], zoom: 2.2 });
+  const { ref, map, lost } = useMap({ center: [-60, 38], zoom: 2.2 });
   const [cur, setCur] = useState(0); // unix seconds
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(0);
@@ -78,7 +79,7 @@ export default function ReplayPage() {
           properties: { t },
         })),
     };
-    const src = map.getSource("replay") as maplibregl.GeoJSONSource | undefined;
+    const src = map.getSource("replay") as GeoJSONSource | undefined;
     if (src) return void src.setData(data);
     map.addSource("replay", { type: "geojson", data });
     map.addLayer({
@@ -168,6 +169,7 @@ export default function ReplayPage() {
   return (
     <div className="mapwrap">
       <div ref={ref} className="map" />
+      {lost && <MapLost />}
       {loading && !checkins.length && <div className="overlay-loading"><Loading /></div>}
       <div className="overlay replay-clock">
         <div className="rp-date">{cur > 0 ? fmtDate(new Date(cur * 1000).toISOString(), { month: "short", year: "numeric" }) : "—"}</div>
